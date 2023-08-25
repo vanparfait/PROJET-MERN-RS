@@ -3,8 +3,8 @@ const express = require("express");
 const app = express();
 
 app.use((req, res) => {
-  console.log("Ecoute sur le port 5000");
-  res.json({ message: "Ecoute sur le port 5000" });
+  console.log("Ecoute sur le port" + process.env.PORT);
+  res.json({ message: "Ecoute sur le port" + process.env.PORT });
 });
 
 module.exports = app;
