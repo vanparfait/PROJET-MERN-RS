@@ -4,9 +4,7 @@ const connectDB = async () => {
   try {
     //mongoose.set("strictQuery", false);
     await mongoose.connect(
-      "mongodb+srv://" +
-        process.env.DB_USER_PASS +
-        "@cluster0.68eauij.mongodb.net/PROJET-MERN",
+      `mongodb+srv://${process.env.DB_USER_PASS}@cluster0.68eauij.mongodb.net/PROJET-MERN`,
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
