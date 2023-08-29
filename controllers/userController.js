@@ -120,3 +120,72 @@ module.exports.deleteUser = async (req, res) => {
     res.status(500).json(error);
   }
 };
+
+module.exports.follow = async (req, res) => {
+  if (
+    !ObjectId.isValid(req.params.id) ||
+    !ObjectId.isValid(req.body.idToFollow)
+  )
+    return res
+      .status(400)
+      .json({ error: "l'id " + req.params.id + " est inconnu" });
+  try {
+    //add to the follower list
+    await userModel
+      .findByIdAndUpdate(
+        req.params.id,
+        { $addToSet: { following: req.body.idToFollow } },
+        { new: true }
+      )
+      .then((data) => res.status(200).send(data));
+
+    await userModel
+      .findByIdAndUpdate(
+        req.body.idToFollow,
+        { $addToSet: { followers: req.params.id } },
+        { new: true }
+      )
+      .then((data) => res.status(200).send(data));
+  } catch (error) {
+    res.status(400).json(error);
+  }
+
+  //add to following list
+  await userModel.findByIdAndUpdate(
+    req.body.idToFollow,
+    { $addToSet: { followers: req.params.id } },
+    { new: true },
+    (err, docs) => {
+      if (!err) res.status(201).json(docs);
+      else return res.status(400).json(err);
+    }
+  );
+};
+
+module.exports.unfollow = async (req, res) => {
+  if (
+    !ObjectId.isValid(req.params.id) ||
+    !ObjectId.isValid(req.body.idToUnFollow)
+  )
+    return res
+      .status(400)
+      .json({ error: "l'id " + req.params.id + " est inconnu" });
+
+  try {
+    const unfollowedUser = await userModel.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { following: req.body.idToUnFollow } },
+      { new: true }
+    );
+
+    const updatedUnfollowedUser = await userModel.findByIdAndUpdate(
+      req.body.idToUnFollow,
+      { $pull: { followers: req.params.id } },
+      { new: true }
+    );
+
+    res.status(200).json({ unfollowedUser, updatedUnfollowedUser });
+  } catch (error) {
+    res.status(400).json(error);
+  }
+};
