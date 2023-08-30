@@ -1,3 +1,5 @@
+const express = require("express");
+const router = express.Router();
 const {
   signup,
   login,
@@ -7,14 +9,16 @@ const {
   deleteUser,
   follow,
   unfollow,
+  logout,
 } = require("../controllers/userController");
+//const { auth } = require("../middleware/auth");
 
-const express = require("express");
-const router = express.Router();
-
+//AUTH
 router.post("/signup", signup);
-
 router.post("/login", login);
+router.get("/logout", logout);
+
+//USER DISPLAY : BLOCK
 router.get("/", getAllUsers);
 router.get("/:id", userInfo);
 router.put("/:id", updateUser);
