@@ -11,19 +11,19 @@ const {
   unfollow,
   logout,
 } = require("../controllers/userController");
-//const { auth } = require("../middleware/auth");
+const { auth } = require("../middleware/auth");
 
 //AUTH
-router.post("/signup", signup);
-router.post("/login", login);
-router.get("/logout", logout);
+router.post("/signup", auth, signup);
+router.post("/login", auth, login);
+router.get("/logout", auth, logout);
 
 //USER DISPLAY : BLOCK
-router.get("/", getAllUsers);
-router.get("/:id", userInfo);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
-router.patch("/follow/:id", follow);
-router.patch("/unfollow/:id", unfollow);
+router.get("/", auth, getAllUsers);
+router.get("/:id", auth, userInfo);
+router.put("/:id", auth, updateUser);
+router.delete("/:id", auth, deleteUser);
+router.patch("/follow/:id", auth, follow);
+router.patch("/unfollow/:id", auth, unfollow);
 
 module.exports = router;

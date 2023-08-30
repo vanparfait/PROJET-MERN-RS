@@ -47,13 +47,13 @@ module.exports.login = (req, res, next) => {
           }
           // res.status(200).json({
           //   userId: user._id,
-          //   token: jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
+          //   token: jwt.sign({ userId: user._id }, process.env.TOKEN_KEY, {
           //     expiresIn: "24h",
           //   }),
           // });
           res.cookie(
             "token",
-            jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET"),
+            jwt.sign({ userId: user._id }, process.env.TOKEN_KEY),
             {
               maxAge: 24 * 60 * 60 * 1000, // expire dans 24 heures
               httpOnly: true, // Empêche JavaScript de lire le cookie
