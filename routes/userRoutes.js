@@ -1,29 +1,27 @@
 const express = require("express");
 const router = express.Router();
 const {
-  signup,
-  login,
   getAllUsers,
   userInfo,
   updateUser,
   deleteUser,
   follow,
   unfollow,
-  logout,
 } = require("../controllers/userController");
 const { auth } = require("../middleware/auth");
+const { signup, login, logout } = require("../controllers/authController");
 
 //AUTH
-router.post("/signup", auth, signup);
-router.post("/login", auth, login);
-router.get("/logout", auth, logout);
+router.post("/signup", signup);
+router.post("/login", login);
+router.get("/logout", logout);
 
 //USER DISPLAY : BLOCK
-router.get("/", auth, getAllUsers);
-router.get("/:id", auth, userInfo);
-router.put("/:id", auth, updateUser);
-router.delete("/:id", auth, deleteUser);
-router.patch("/follow/:id", auth, follow);
-router.patch("/unfollow/:id", auth, unfollow);
+router.get("/", getAllUsers);
+router.get("/:id", userInfo);
+router.put("/:id", updateUser);
+router.delete("/:id", deleteUser);
+router.patch("/follow/:id", follow);
+router.patch("/unfollow/:id", unfollow);
 
 module.exports = router;
