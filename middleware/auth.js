@@ -1,20 +1,23 @@
 const jwt = require("jsonwebtoken");
-module.exports.checkUser = (req, res, next) => {
-  try {
-    const token = req.cookies.token; // Assurez-vous que vous avez bien installé et configuré le middleware cookie-parser
-    if (!token) {
-      return res.status(401).json({ error: "Token non fourni" });
-    }
+const userModel = require("../models/userModel");
 
-    const decodedToken = jwt.verify(token, process.env.TOKEN_KEY); // Assurez-vous que TOKEN_KEY est correctement défini dans votre environnement
-    const userId = decodedToken.userId;
-    console.log(userId);
-    req.auth = {
-      userId: userId,
-    };
+module.exports.checkUser = (req, res, next) => {
+  const token = req.cookies.token; // Assurez-vous que vous avez bien installé et configuré le middleware cookie-parser
+  if (token) {
+    jwt.verify(token, process.env.TOKEN_KEY, async (err, decodedToken) => {
+      if (err) {
+        res.locals.user = null;
+        res.cookie("token", "", { maxAge: 1 });
+        next();
+      } else {
+        let user = await userModel.findById(decodedToken.userId); // Utilisez decodedToken.userId pour rechercher l'utilisateur
+        res.locals.user = user;
+        next();
+      }
+    });
+  } else {
+    res.locals.user = null;
     next();
-  } catch (error) {
-    res.status(401).json({ error: "Token invalide" }); // Vous pouvez personnaliser le message d'erreur ici
   }
 };
 
@@ -25,7 +28,7 @@ module.exports.requireAuth = (req, res, next) => {
       if (err) {
         console.log(err);
       } else {
-        console.log(decodedToken.id);
+        console.log(decodedToken.userId);
         next();
       }
     });

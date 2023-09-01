@@ -44,6 +44,7 @@ module.exports.login = (req, res, next) => {
           if (!valid) {
             return res.status(401).json({ error: "Mot de passe incorrect !" });
           }
+          //if (!req.body.pseudo) res.status(200).json({ error: "nnnnnnnnnnnn" });
           // res.status(200).json({
           //   userId: user._id,
           //   token: jwt.sign({ userId: user._id }, process.env.TOKEN_KEY, {
@@ -60,7 +61,6 @@ module.exports.login = (req, res, next) => {
           );
           res.status(200).json({
             userId: user._id,
-            // ...
           });
         })
         .catch((error) => res.status(500).json({ error }));
