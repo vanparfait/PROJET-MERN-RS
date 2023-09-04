@@ -4,37 +4,46 @@ const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 //: Importation de jsonwebtoken
 const jwt = require("jsonwebtoken");
+const { signupErrors, loginErrors } = require("../utils/errorUtils");
 
 module.exports.signup = (req, res, next) => {
-  bcrypt
-    .hash(req.body.password, 10)
-    .then((hash) => {
-      const user = new userModel({
-        pseudo: req.body.pseudo,
-        email: req.body.email,
-        password: hash,
+  const password = req.body.password;
+  if (password.length < 6) {
+    return res
+      .status(400)
+      .json({ error: "Le mot de passe doit avoir au moins 6 caractères." });
+  }
+
+  bcrypt.hash(req.body.password, 10).then((hash) => {
+    //console.log("Password after hash:", hash);
+
+    const user = new userModel({
+      pseudo: req.body.pseudo,
+      email: req.body.email,
+      password: hash,
+    });
+    user
+      .save()
+      .then(() =>
+        res.status(201).json({ message: "Utilisateur créé avec succès !" })
+      )
+      .catch((err) => {
+        const errors = signupErrors(err);
+        res.status(200).json({ errors });
       });
-      user
-        .save()
-        .then(() =>
-          res.status(201).json({ message: "Utilisateur créé avec succès !" })
-        )
-        .catch((error) => res.status(400).json({ error }));
-    })
-    .catch((error) =>
-      res.status(500).json({
-        message: "Une erreur interne s'est produite.",
-        error: error.message,
-      })
-    );
+  });
+  // .catch((error) =>
+  //   res.status(500).json({
+  //     message: "Une erreur interne s'est produite.",
+  //     error: error.message,
+  //   })
+  // );
 };
 
 module.exports.login = (req, res, next) => {
-  //console.log(userModel);
   userModel
     .findOne({ email: req.body.email })
     .then((user) => {
-      //console.log(user);
       if (!user) {
         return res.status(401).json({ error: "L'utilisateur n'existe pas ! " });
       }
@@ -59,11 +68,14 @@ module.exports.login = (req, res, next) => {
               httpOnly: true, // Empêche JavaScript de lire le cookie
             }
           );
-          res.status(200).json({
+          res.status(201).json({
             userId: user._id,
           });
         })
-        .catch((error) => res.status(500).json({ error }));
+        .catch((err) => {
+          //const errors = loginErrors(err);
+          res.status(200).json({ errors });
+        });
     })
     .catch((error) => res.status(500).json({ error }));
 };

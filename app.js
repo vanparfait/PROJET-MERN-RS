@@ -1,4 +1,4 @@
-//TOKEN_KEY="RANDOM_TOKEN_SECRET"
+//TOKEN_KEY="RANDOM_TOKEN_SECRET" 2h50
 const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
