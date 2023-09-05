@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const dotenv = require("dotenv").config({ path: "./config/.env" });
 const userRoute = require("./routes/userRoutes");
+const postRoute = require("./routes/postRoutes");
 const { checkUser, requireAuth } = require("./middleware/auth");
 
 app.use(express.json());
@@ -21,5 +22,6 @@ connectDB();
 
 //routes
 app.use("/api/user", userRoute);
+app.use("/api/post", postRoute);
 
 module.exports = app;
